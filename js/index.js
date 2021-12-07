@@ -1,5 +1,7 @@
 // Write your Pizza Builder JavaScript in this file.
 
+// const { LifecycleWatcher } = require("puppeteer");
+
 // Constants
 const basePrice = 10;
 const ingredients = {
@@ -88,7 +90,7 @@ function renderButtons() {
   if (state.pepperoni) {
     document.querySelector('.btn.btn-pepperoni').classList.add('active');
   } else {
-    document.querySelector('.btn.btn-pepperoni').classList.remove('active');
+    document.querySelector('.btn.btn-pepperoni').classList.add('active');
   }
 
   if (state.mushrooms) {
@@ -114,24 +116,60 @@ function renderButtons() {
   } else {
     document.querySelector('.btn.btn-crust').classList.remove('active');
   }
+
+/* ------------------------- ANOTHER WAY OF DOING IT ------------------
+
+  state.pepperoni ? document.querySelector('.btn.btn-pepperoni').classList.add('active') : document.querySelector('.btn.btn-pepperoni').classList.add('active')
+  state.mushrooms ? document.querySelector('.btn.btn-mushrooms').classList.add('active') : document.querySelector('.btn.btn-mushrooms').classList.remove('active')
+  state.greenPeppers ? document.querySelector('.btn.btn-green-peppers').classList.add('active' : document.querySelector('.btn.btn-green-peppers').classList.remove('active')
+  state.whiteSauce ? document.querySelector('.btn.btn-sauce').classList.add('active') : document.querySelector('.btn.btn-sauce').classList.remove('active')
+  state.glutenFreeCrust ? document.querySelector('.btn.btn-crust').classList.add('active') : document.querySelector('.btn.btn-crust').classList.remove('active')
+
+----------------------------------------------------------------------*/
+
+/* ------------------------- A THIRD WAY OF DOING IT ------------------
+
+  const selectors = {
+    greenPeppers: 'btn-green-peppers',
+    pepperoni: 'btn-pepperoni',
+    mushrooms: 'btn-mushrooms',
+    whiteSauce: 'btn-sauce',
+    glutenFreeCrust: 'btn-crust'
+  }
+
+  const element = document.querySelector("." + selectors[ingredient]);
+
+  for (const ingredient in state) {
+    const element = document.querySelector(selectors[ingredient]);
+    state[ingredient] ? element?.classList.add('active') : element?.classList.remove('active')
+  }
+
+  // =====> the question mark after element says : don't try to access element if element is falsy
+
+----------------------------------------------------------------------*/
+
 }
 
 function renderPrice() {
   // Iteration 4: change the HTML of `<aside class="panel price">`
-  // Display the list of all items selected, with their individual price and the total price accordingly
-  // Use a for ... in loop ??
 
-  let addedPrice = 0;
+  const pizzaPriceList = document.querySelector('.panel.price ul');
+  let sumOfIngredientsPrices = basePrice;
+  let finalPrice = document.querySelector('.panel.price strong')
+
+  pizzaPriceList.innerHTML = '';
 
   for (let key in state) {
-    if (key === true) {
-      document.querySelector(`li.${key}`).style.display = '';
-      addedPrice += ingredients[key].price;
-    } else {
-      document.querySelector(`li.${key}`).style.display = none;
-    }
+    if (state[key] === true) {
+      const ingredientLi = document.createElement('li');
+      ingredientLi.innerText = `$${ingredients[key].price} ${ingredients[key].name}`;
+      pizzaPriceList.appendChild(ingredientLi);
+      sumOfIngredientsPrices += ingredients[key].price;
+    } 
   }
-  document.querySelector('strong').innerText = `$${basePrice + addedPrice}`;
+
+  finalPrice.innerText = "$" + sumOfIngredientsPrices;
+
 }
 
 renderEverything();
